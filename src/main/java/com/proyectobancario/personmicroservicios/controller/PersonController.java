@@ -39,7 +39,7 @@ public class PersonController  extends Shared{
     		   
    }
     
-    @GetMapping()   
+    @GetMapping
     public Mono<ResponseEntity<Flux<Person>>> getAllActives(){
        return  Mono.just(ResponseEntity.ok()
 				.contentType(MediaType.APPLICATION_JSON)
