@@ -13,11 +13,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.proyectobancario.personmicroservicios.util.Constants;
 import com.proyectobancario.personmicroservicios.util.Shared;
 
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
+
 import com.proyectobancario.personmicroservicios.model.Person;
+import com.proyectobancario.personmicroservicios.model.dto.Parameter;
+import com.proyectobancario.personmicroservicios.service.IParamaterService;
 import com.proyectobancario.personmicroservicios.service.IPersonService;
 
 import reactor.core.publisher.Flux;
@@ -28,15 +33,27 @@ import reactor.core.publisher.Mono;
 public class PersonController  extends Shared{
     
     @Autowired
-    IPersonService service;
+    private IPersonService service;
+    
+    @Autowired
+    private IParamaterService service2;
 
     @GetMapping("/getCustomer")   
     public Mono<ResponseEntity<Flux<Person>>> getCustomer(){
        return Mono.just(ResponseEntity.ok()  
     		   .contentType(MediaType.APPLICATION_JSON)
     		   .body(service.findAll()));
-    		    
-    		   
+    		    	   
+   }
+    
+    @GetMapping("/getParameter")
+    public Mono<ResponseEntity<Flux<Parameter>>> getParameterAllActives(){
+		
+       return  Mono.just(ResponseEntity.ok()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(service2.findAllActives())
+				);
+
    }
     
     @GetMapping
