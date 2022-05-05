@@ -11,9 +11,9 @@ public class AppConfig {
 	@Value("${config.base.endpoint}")
 	private String url;
 	
-	@Bean
+	/*@Bean
 	public WebClient registrarWebCLient() {
 		return WebClient.create(url);
-	}
+	}*/
 
 }

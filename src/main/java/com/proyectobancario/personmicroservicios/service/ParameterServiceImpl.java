@@ -10,9 +10,9 @@ import com.proyectobancario.personmicroservicios.model.dto.Parameter;
 import reactor.core.publisher.Flux;
 
 @Service
-public class ParameterServiceImpl implements IParamaterService {
+public class ParameterServiceImpl  {
 
-	@Autowired
+	/*@Autowired
 	private WebClient client;
 
 	@Override
@@ -20,6 +20,6 @@ public class ParameterServiceImpl implements IParamaterService {
 		return client.get()
 				.accept(MediaType.APPLICATION_JSON).retrieve()
 				.bodyToFlux(Parameter.class);
-	}
+	}*/
 
 }

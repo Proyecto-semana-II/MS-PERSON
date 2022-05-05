@@ -3,6 +3,7 @@ package com.proyectobancario.personmicroservicios.controller;
 import java.net.URI;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,16 +13,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import com.proyectobancario.personmicroservicios.util.Constants;
 import com.proyectobancario.personmicroservicios.util.Shared;
-
-import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
-
 import com.proyectobancario.personmicroservicios.model.Person;
 import com.proyectobancario.personmicroservicios.model.dto.Parameter;
+import com.proyectobancario.personmicroservicios.service.IKafkaSenderService;
 import com.proyectobancario.personmicroservicios.service.IParamaterService;
 import com.proyectobancario.personmicroservicios.service.IPersonService;
 
@@ -30,13 +29,19 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api")
-public class PersonController  extends Shared{
+public class PersonController  extends Shared {
+	
+	@Value("${topic}")
+	String topic;
+	
+	@Autowired
+	IKafkaSenderService sender;
     
     @Autowired
     private IPersonService service;
     
-    @Autowired
-    private IParamaterService service2;
+    /*@Autowired
+    private IParamaterService service2;*/
 
     @GetMapping("/getCustomer")   
     public Mono<ResponseEntity<Flux<Person>>> getCustomer(){
@@ -46,7 +51,7 @@ public class PersonController  extends Shared{
     		    	   
    }
     
-    @GetMapping("/getParameter")
+    /*@GetMapping("/getParameter")
     public Mono<ResponseEntity<Flux<Parameter>>> getParameterAllActives(){
 		
        return  Mono.just(ResponseEntity.ok()
@@ -54,7 +59,7 @@ public class PersonController  extends Shared{
 				.body(service2.findAllActives())
 				);
 
-   }
+   }*/
     
     @GetMapping
     public Mono<ResponseEntity<Flux<Person>>> getAllActives(){
@@ -65,10 +70,24 @@ public class PersonController  extends Shared{
     		   
    }
     
+    /*@GetMapping(value = "/producer")
+	public String producer(@RequestParam("message") String message) {
+    	sender.send(message);
+
+		return "Message sent to the Kafka Topic java_in_use_topic Successfully";
+	}*/
+    
 
     @GetMapping("/getCustomerByTypeCustomer/{typeDocument}")
     public Flux<Person> getCustomerByTypeCustomer(@PathVariable("typeDocument") String typeDocument){
         return 	service.findPersonByIdTypeDocument(typeDocument);
+    }
+    
+   @PostMapping("/postKafka")
+    public void saveKafka(@RequestBody Parameter parameter) {
+    	parameter.setRegistrationStatus(Constants.ESTADO_VIGENTE);
+		parameter.setAudit(getBeanCreationParameters());
+    	sender.sendMessage(topic, parameter);
     }
 
     @PostMapping("/postCustomer")

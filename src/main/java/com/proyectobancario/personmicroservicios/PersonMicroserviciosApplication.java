@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 @EnableEurekaClient
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.proyectobancario.personmicroservicios.controller", "com.proyectobancario.personmicroservicios.service"})
 public class PersonMicroserviciosApplication {
 
 	public static void main(String[] args) {
